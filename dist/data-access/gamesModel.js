@@ -26,12 +26,16 @@ class GameRepository {
             return Object.assign(Object.assign({}, newGame), { id: result.insertId });
         });
     }
-    delete(id) {
+    Delete(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const [result] = yield this.pool.query("DELETE FROM games WHERE id = ?", [id]);
-            if (result.affectedRows === 0)
-                return undefined;
-            return undefined;
+            try {
+                const [result] = yield this.pool.query("DELETE FROM games WHERE id = ?", [id]);
+                return result.affectedRows > 0;
+            }
+            catch (error) {
+                console.error("Error deleting game:", error);
+                throw new Error("Database query error");
+            }
         });
     }
 }

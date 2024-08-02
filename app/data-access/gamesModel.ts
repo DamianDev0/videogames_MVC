@@ -19,14 +19,16 @@ export class GameRepository {
     return { ...newGame, id: result.insertId };
   }
 
-  async delete(id: number): Promise<Games | undefined> {
-    const [result]: [ResultSetHeader, FieldPacket[]] = await this.pool.query(
-      "DELETE FROM games WHERE id = ?",
-      [id]
-    );
-
-    if (result.affectedRows === 0) return undefined;
-
-    return undefined;
+  async Delete(id: number): Promise<boolean> {
+    try {
+      const [result]: [ResultSetHeader, FieldPacket[]] = await this.pool.query(
+        "DELETE FROM games WHERE id = ?",
+        [id]
+      );
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error deleting game:", error);
+      throw new Error("Database query error");
+    }
   }
 }

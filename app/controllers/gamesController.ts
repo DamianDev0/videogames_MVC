@@ -43,13 +43,11 @@ export class GamesController {
 
   static async deleteGame(req: Request, res: Response): Promise<void> {
     const id = parseInt(req.params.id);
-
     try {
-      const [rows]: [ResultSetHeader[], FieldPacket[]] = await pool.query(
-        "SELECT * FROM games WHERE id = ?",
-        [id]
-      );
-      if (rows.length === 0) {
+      const gameRepository: GameRepository = new GameRepository(pool);
+      const gameDelete: boolean = await gameRepository.Delete(id);
+
+      if (!gameDelete) {
         res.status(404).json({ message: "Game not found" });
         return;
       }
@@ -58,9 +56,10 @@ export class GamesController {
         status: 200,
         message: "Game deleted successfully",
       });
+
     } catch (error) {
       res.status(500).send("Server error");
-      throw new Error("Cannot delete game");
+      console.error("Error deleting game:", error);
     }
   }
 }

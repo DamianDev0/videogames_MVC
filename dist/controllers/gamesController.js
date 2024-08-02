@@ -52,8 +52,13 @@ class GamesController {
         return __awaiter(this, void 0, void 0, function* () {
             const id = parseInt(req.params.id);
             try {
-                const [rows] = yield db_1.default.query("SELECT * FROM games WHERE id = ?", [id]);
-                if (rows.length === 0) {
+                const gameRepository = new gamesModel_1.GameRepository(db_1.default);
+                const success = yield gameRepository.Delete(id);
+                if (!success) {
+                    res.status(404).json({ message: "Game not found" });
+                    return;
+                }
+                if (!success) {
                     res.status(404).json({ message: "Game not found" });
                     return;
                 }
@@ -64,7 +69,7 @@ class GamesController {
             }
             catch (error) {
                 res.status(500).send("Server error");
-                throw new Error("Cannot delete game");
+                console.error("Error deleting game:", error);
             }
         });
     }
